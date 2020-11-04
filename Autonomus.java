@@ -1,9 +1,12 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
+
+import java.util.concurrent.TimeUnit;
 
 /**
  * This program provides driver station control of  Mecanum Drive Prototype.
@@ -14,8 +17,8 @@ import com.qualcomm.robotcore.util.ElapsedTime;
  * The gamepad1 right joystick is used for translation movement, while the left joystick x-axis controls rotation.
  */
 
-@TeleOp(name = "Mecanum Proto Manual", group = "Linear Opmode")
-// @Autonomous(...) is the other common choice
+//@TeleOp(name = "Mecanum Proto Manual", group = "Linear Opmode")
+@Autonomous(name = "Autonomous Code", group = "Linear Opmode")
 // @Disabled
 public class Autonomus extends LinearOpMode {
 
@@ -25,17 +28,16 @@ public class Autonomus extends LinearOpMode {
     DcMotor frontRightMotor = null;
     DcMotor backLeftMotor = null;
     DcMotor backRightMotor = null;
+
     // declare motor speed variables
     double FR;
     double FL;
     double BR;
     double BL;
-    // declare joystick position variables
-    double X1;
-    double Y1;
-    double X2;
+
+    int ms = 1000;
+
     // operational constants
-    double joyScale = 0.5;
     double motorMax = 0.6; // Limit motor power to this value for Andymark RUN_USING_ENCODER mode
 
     @Override
@@ -54,7 +56,6 @@ public class Autonomus extends LinearOpMode {
 
         // Set the drive motor direction:
         // "Reverse" the motor that runs backwards when connected directly to the battery
-        // These polarities are for the Neverest 20 motors
 
         frontLeftMotor.setDirection(DcMotor.Direction.FORWARD);
         frontRightMotor.setDirection(DcMotor.Direction.REVERSE);
@@ -80,15 +81,40 @@ public class Autonomus extends LinearOpMode {
         waitForStart();
         runtime.reset();
 
-        moveFront(1);
-        sleep(2000);
-        moveRight(1);
-        sleep(2000);
-        moveBack(1);
-        sleep(2000);
-        moveLeft(1);
-        sleep(2000);
-        stop();
+        //Square movement
+        while (opModeIsActive() && runtime.time(TimeUnit.SECONDS) < 10) {
+            moveFront(1);
+            sleep(ms);
+            moveRight(1);
+            sleep(ms);
+            moveBack(1);
+            sleep(ms);
+            moveLeft(1);
+            sleep(ms);
+            stopRobot();
+            idle();
+        }
+
+//        while (opModeIsActive() && runtime.time(TimeUnit.SECONDS) < 30) {
+//            moveFront(1);
+//            sleep(ms);
+//            moveRight(1);
+//            sleep(ms);
+//            moveBack(1);
+//            sleep(ms);
+//            moveLeft(1);
+//            sleep(ms);
+//            moveBack(1);
+//            sleep(ms);
+//            moveRight(1);
+//            sleep(ms);
+//            moveFront(1);
+//            sleep(ms);
+//            moveLeft(1);
+//            sleep(ms);
+//            stopRobot();
+//            idle();
+//        }
 
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
@@ -96,16 +122,9 @@ public class Autonomus extends LinearOpMode {
             telemetry.update();
             idle();
         }
-
-        if (isStopRequested()) {
-            frontLeftMotor.setPower(0);
-            frontRightMotor.setPower(0);
-            backLeftMotor.setPower(0);
-            backRightMotor.setPower(0);
-        }
     }
 
-    private void stop() {
+    private void stopRobot() {
         FL = BL = FR = BR = 0;
         assignPowerToMotors();
         sendTelemetryData();
@@ -151,7 +170,7 @@ public class Autonomus extends LinearOpMode {
     }
 
     //Pivot Movements
-    private void moveFrontRight(int power) {
+    private void moveFrontLeft(int power) {
         FL = BR = 0;
         BL = FR = power;
         assignPowerToMotors();
@@ -172,7 +191,7 @@ public class Autonomus extends LinearOpMode {
         sendTelemetryData();
     }
 
-    private void moveFrontLeft(int power) {
+    private void moveFrontRight(int power) {
         FL = BR = power;
         BL = FR = 0;
         assignPowerToMotors();
